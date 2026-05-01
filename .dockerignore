@@ -1,0 +1,11 @@
+node_modules
+dist
+coverage
+.git
+.idea
+.env
+.npm-cache
+.pnpm-store
+npm-debug.log*
+Dockerfile
+docker-compose.yaml

@@ -1,0 +1,38 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: promocodes-api
+    environment:
+      DATABASE_URL: postgresql://postgres:notabigsecret@db:5432/promocodes?schema=public
+      APP_PORT: 3000
+      THROTTLE_TTL_MS: 60000
+      THROTTLE_LIMIT: 100
+      LOG_LEVEL: debug
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    container_name: promocodes-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: notabigsecret
+      POSTGRES_DB: promocodes
+    ports:
+      - "5432:5432"
+    volumes:
+      - promocodes-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d promocodes"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  promocodes-db-data:
